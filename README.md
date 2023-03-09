@@ -13,6 +13,8 @@ También se recomienda descargar [SQL SERVER y SQL SERVER MANAGEMENT STUDIO](htt
 
 - ### Microsoft.EntityFrameworkCore.SqlServer v7.0.1
 - ### Microsoft.EntityFrameworkCore.Tools v7.0.1 
+- ### AutoMapper v12.0.0
+- ### AutoMapper.Extensions.Microsoft.DependencyInjection v12.0.0
 
 # Pasos para levantar el proyecto de forma local
 1. hacer git clone de este repositorio en el directorio de su preferencia.
