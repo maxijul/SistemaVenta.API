@@ -1,7 +1,4 @@
-﻿using SistemaVenta.Model;
-using System.Globalization;
-
-namespace SistemaVenta.DTO
+﻿namespace SistemaVenta.DTO
 {
     public class ProductoDTO
     {
@@ -12,25 +9,5 @@ namespace SistemaVenta.DTO
         public int Stock { get; set; }
         public string Precio { get; set; }
         public int EsActivo { get; set; }
-
-        public static explicit operator ProductoDTO(Producto v)
-        {
-            if (v == null)
-                return null;
-
-            var productoDTO = new ProductoDTO()
-            {
-                IdProducto = v.IdProducto,
-                Nombre = v.Nombre,
-                IdCategoria = v.IdCategoria,
-                DescripcionCategoria = v.IdCategoriaNavigation.Nombre,
-                Stock = v.Stock,
-                Precio = Convert.ToString(v.Precio, new CultureInfo("es-AR")),
-                EsActivo = v.EsActivo == true ? 1 : 0
-            };
-
-            return productoDTO;
-        }
-
     }
 }
