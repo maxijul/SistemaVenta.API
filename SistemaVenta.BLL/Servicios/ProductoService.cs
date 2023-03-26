@@ -1,7 +1,13 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using SistemaVenta.BLL.Interfaces;
-using SistemaVenta.DAL.Interfaces;
+using SistemaVenta.BLL.Servicios.Contrato;
+using SistemaVenta.DAL.Repositorios.Contrato;
 using SistemaVenta.DTO;
 using SistemaVenta.Model;
 
@@ -9,73 +15,74 @@ namespace SistemaVenta.BLL.Servicios
 {
     public class ProductoService : IProductoService
     {
-        private readonly IGenericRepository<Producto> _productoRepository;
+        private readonly IGenericRepository<Producto> _productoRepositorio;
         private readonly IMapper _mapper;
 
-        public ProductoService(IGenericRepository<Producto> productoRepository, IMapper mapper)
+        public ProductoService(IGenericRepository<Producto> productoRepositorio, IMapper mapper)
         {
-            _productoRepository = productoRepository;
+            _productoRepositorio = productoRepositorio;
             _mapper = mapper;
         }
 
-        public async Task<List<ProductoDTO>> GetLista()
+        public async Task<List<ProductoDTO>> Lista()
         {
             try
             {
-                var queryProducto = await _productoRepository.Consultar();
-                var listaProductos = queryProducto.Include(cat => cat.IdCategoriaNavigation).ToList();
+                var queryProducto = await _productoRepositorio.Consultar();
 
-                return _mapper.Map<List<ProductoDTO>>(listaProductos.ToList());
+                var listarProducto = queryProducto.Include(cat => cat.IdCategoriaNavigation).ToList();
+
+                return _mapper.Map<List<ProductoDTO>>(listarProducto.ToList());
             }
             catch
             {
+
                 throw;
             }
         }
 
-        public async Task<ProductoDTO> Crear(UsuarioDTO producto)
+        public async Task<ProductoDTO> Crear(ProductoDTO modelo)
         {
             try
             {
-                var productoCreado = await _productoRepository.Crear(_mapper.Map<Producto>(producto));
+                var productoCreado = await _productoRepositorio.Crear(_mapper.Map<Producto>(modelo));
 
-                if (productoCreado.IdProducto == 0)
-                    throw new TaskCanceledException("No se pudo crear el producto");
+                if(productoCreado.IdProducto == 0) throw new TaskCanceledException("No se pudo crear");
 
                 return _mapper.Map<ProductoDTO>(productoCreado);
-
-            catch
+            }
+            catch 
             {
+
                 throw;
             }
         }
 
-        public async Task<bool> Editar(ProductoDTO producto)
+        public async Task<bool> Editar(ProductoDTO modelo)
         {
             try
             {
-                var productoMapeado = _mapper.Map<Producto>(producto);
-                var productoEncontrado = await _productoRepository
-                    .Obtener(u => u.IdProducto == productoMapeado.IdProducto);
+                var productoModelo = _mapper.Map<Producto>(modelo);
 
-                if (productoEncontrado == null)
-                    throw new TaskCanceledException("El producto no existe");
+                var productoEncontrado = await _productoRepositorio.Obtener(u => u.IdProducto == productoModelo.IdProducto);
 
-                productoEncontrado.Nombre = productoMapeado.Nombre;
-                productoEncontrado.IdCategoria = productoMapeado.IdCategoria;
-                productoEncontrado.Stock = productoMapeado.Stock;
-                productoEncontrado.Precio = productoMapeado.Precio;
-                productoEncontrado.EsActivo = productoMapeado.EsActivo;
+                if (productoEncontrado.IdProducto == 0) throw new TaskCanceledException("El producto no existe");
 
-                bool respuesta = await _productoRepository.Editar(productoEncontrado);
+                productoEncontrado.Nombre = productoModelo.Nombre;
+                productoEncontrado.IdCategoria = productoModelo.IdCategoria;
+                productoEncontrado.Stock = productoModelo.Stock;
+                productoEncontrado.Precio = productoModelo.Precio;
+                productoEncontrado.EsActivo = productoModelo.EsActivo;
 
-                if (!respuesta)
-                    throw new TaskCanceledException("No se pudo editar el producto");
+                bool respuesta = await _productoRepositorio.Editar(productoEncontrado);
+
+                if (!respuesta) throw new TaskCanceledException("No se pudo editar");
 
                 return respuesta;
             }
             catch
             {
+
                 throw;
             }
         }
@@ -84,23 +91,23 @@ namespace SistemaVenta.BLL.Servicios
         {
             try
             {
-                var productoEncontrado = await _productoRepository.Obtener(p => p.IdProducto == id);
+                var productoEncontrado = await _productoRepositorio.Obtener(p => p.IdProducto == id);
 
-                if (productoEncontrado == null)
-                    throw new TaskCanceledException("El producto no existe");
+                if (productoEncontrado == null) throw new TaskCanceledException("El producto no existe");
 
-                bool respuesta = await _productoRepository.Eliminar(productoEncontrado);
+                bool respuesta = await _productoRepositorio.Eliminar(productoEncontrado);
 
-                if (!respuesta)
-                    throw new TaskCanceledException("El producto no se pudo eliminar");
+                if (!respuesta) throw new TaskCanceledException("No se pudo Eliminar");
 
                 return respuesta;
-
             }
             catch
             {
+
                 throw;
             }
         }
+
+        
     }
 }

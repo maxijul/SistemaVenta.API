@@ -9,8 +9,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Inyeccion de dependencias
 builder.Services.InyectarDependencias(builder.Configuration);
+
+builder.Services.AddCors(options =>
+options.AddPolicy("NuevaPolitica", app =>
+{
+    app.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+}));
 
 var app = builder.Build();
 
@@ -21,7 +26,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+app.UseCors("NuevaPolitica");
 
 app.UseAuthorization();
 

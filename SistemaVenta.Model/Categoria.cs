@@ -1,10 +1,17 @@
-﻿namespace SistemaVenta.Model;
+﻿using System;
+using System.Collections.Generic;
 
-public partial class Categoria
+namespace SistemaVenta.Model;
+
+public partial class CategoriA
 {
     public int IdCategoria { get; set; }
-    public string Nombre { get; set; }
-    public bool EsActivo { get; set; }
-    public DateTime FechaRegistro { get; set; }
+
+    public string? Nombre { get; set; }
+
+    public bool? EsActivo { get; set; }
+
+    public DateTime? FechaRegistro { get; set; }
+
     public virtual ICollection<Producto> Productos { get; } = new List<Producto>();
 }

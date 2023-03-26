@@ -1,7 +1,13 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using AutoMapper;
 using SistemaVenta.DTO;
 using SistemaVenta.Model;
-using System.Globalization;
 
 namespace SistemaVenta.Utility
 {
@@ -48,7 +54,7 @@ namespace SistemaVenta.Utility
             #endregion  Usuario
 
             #region Categoria
-            CreateMap<Categoria, CategoriaDTO>().ReverseMap();
+            CreateMap<CategoriA, CategoriaDTO>().ReverseMap();
             #endregion  Categoria
 
             #region Producto
@@ -90,20 +96,20 @@ namespace SistemaVenta.Utility
                 )
                  .ForMember(destino =>
                     destino.FechaRegistro,
-                    opt => opt.MapFrom(origen => origen.FechaRegistro.ToString("dd/MM/yyyy"))
+                    opt => opt.MapFrom(origen => origen.FechaRegistro.Value.ToString("dd/MM/yyyy"))
                 );
 
             CreateMap<VentaDTO, Venta>()
                 .ForMember(destino =>
                     destino.Total,
-                    opt => opt.MapFrom(origen => Convert.ToDecimal(origen.TotalTexto, new CultureInfo("es-AR")))
+                    opt => opt.MapFrom(origen => decimal.Parse(origen.TotalTexto))
                 );
             #endregion  Venta
 
             #region DetalleVenta
             CreateMap<DetalleVenta, DetalleVentaDTO>()
                 .ForMember(destino =>
-                    destino.DescripcionProducto,
+                    destino.DescripcionProductos,
                     opt => opt.MapFrom(origen => origen.IdProductoNavigation.Nombre)
                 )
                 .ForMember(destino =>
@@ -119,10 +125,10 @@ namespace SistemaVenta.Utility
             CreateMap<DetalleVentaDTO, DetalleVenta>()
                  .ForMember(destino =>
                    destino.Precio,
-                   opt => opt.MapFrom(origen => Convert.ToDecimal(origen.PrecioTexto, new CultureInfo("es-AR")))
+                   opt => opt.MapFrom(origen => decimal.Parse(origen.PrecioTexto))
                ).ForMember(destino =>
                    destino.Total,
-                   opt => opt.MapFrom(origen => Convert.ToDecimal(origen.TotalTexto, new CultureInfo("es-AR")))
+                   opt => opt.MapFrom(origen => decimal.Parse(origen.TotalTexto))
                );
 
             #endregion  Categoria
@@ -131,7 +137,7 @@ namespace SistemaVenta.Utility
             CreateMap<DetalleVenta, ReporteDTO>()
                  .ForMember(destino =>
                     destino.FechaRegistro,
-                    opt => opt.MapFrom(origen => origen.IdVentaNavigation.FechaRegistro.ToString("dd/MM/yyyy"))
+                    opt => opt.MapFrom(origen => origen.IdVentaNavigation.FechaRegistro.Value.ToString("dd/MM/yyyy"))
                 )
                  .ForMember(destino =>
                     destino.NumeroDocumento,
